@@ -85,6 +85,12 @@ public class DustTest {
 	}
 	
 	@Test
+	public void testRenderingWithString() {
+		JSTemplate jsTemplate = dust.compile("Hello {.}");
+		assertEquals("Hello DustJS", dust.renderWithData(jsTemplate, "DustJS"));
+	}
+	
+	@Test
 	public void testRenderingWithSimpleBinding() {
 		SimpleBindings bindings = new SimpleBindings();
 		bindings.put("script", "DustJS");

@@ -35,13 +35,24 @@ Thereafter, the `builder` project (top level directory) can be built which is a 
 ### Using
 This project requires JRE 8 (or higher) to run. All the compilers follow similar API for basic functioning.
 
+*Handlebars Example:*
 ```java
-JSTemplateCompiler compiler = new Handlebars(); // or new Dust();
+JSTemplateCompiler compiler = new Handlebars();
 JSTemplate template = compiler.compile("Hello {{this}}"); // follow the templating language syntax
 System.out.println(template.renderWithData("Data Object for JSTemplate"));
 
-JSTemplate template = compiler.compile("Hello {{language}}"); // follow the templating language syntax
-System.out.println(template..renderWithJSON(template, "{ \"language\" : \"Handlebars for Java\"}"));
+template = compiler.compile("Hello {{language}}"); // follow the templating language syntax
+System.out.println(template.renderWithJSON(template, "{ \"language\" : \"Handlebars for Java\"}"));
+```
+
+*Dust Example:*
+```java
+JSTemplateCompiler compiler = new Dust();
+JSTemplate template = compiler.compile("Hello {.}"); // follow the templating language syntax
+System.out.println(template.renderWithData("Data Object for JSTemplate"));
+
+JSTemplate template = compiler.compile("Hello {language}"); // follow the templating language syntax
+System.out.println(template.renderWithJSON(template, "{ \"language\" : \"Dust for Java\"}"));
 ```
 
 Follow the README and documentation for the respective sub-projects for specific usage.
