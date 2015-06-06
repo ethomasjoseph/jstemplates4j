@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+	Copyright 2015 Thomas Joseph
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	    http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+    <parent>
+        <groupId>org.apache</groupId>
+        <artifactId>apache</artifactId>
+        <version>17</version>
+        <relativePath />
+    </parent>
+
+	<groupId>com.ethomasjoseph.jstemplates4j</groupId>
+	<artifactId>jstemplates4j</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0.0</version>
+
+	<name>JavaScript Templates for Java (jstemplates4j)</name>
+	<description>The parent project for JavaScript Templates for Java (jstemplates4j)</description>
+	<inceptionYear>2015</inceptionYear>
+	
+	<properties>
+		<bundle.namespace>com.ethomasjoseph.jstemplates4j</bundle.namespace>
+	</properties>
+	
+	<prerequisites>
+        <maven>3.0.0</maven>
+    </prerequisites>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.5.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>${project.name} v.${project.version}</Bundle-Name>
+                        <Bundle-Description>${project.description}</Bundle-Description>
+                        <Export-Package>!${bundle.namespace}*.internal,${bundle.namespace}*;version="${project.version}"</Export-Package>
+                        <Bundle-Vendor>Thomas Joseph</Bundle-Vendor>
+                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Embed-Dependency,Embedded-Artifacts,Embed-Transitive</_removeheaders>
+                        <_include>-osgi.bnd</_include>
+                    </instructions>
+                    <supportedProjectTypes>
+                        <supportedProjectType>bundle</supportedProjectType>
+                        <supportedProjectType>war</supportedProjectType>
+                    </supportedProjectTypes>
+                </configuration>
+            </plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<url>https://github.com/ethomasjoseph/jstemplates4j</url>
+</project>
