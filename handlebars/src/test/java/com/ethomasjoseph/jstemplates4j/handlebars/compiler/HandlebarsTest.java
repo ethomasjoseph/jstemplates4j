@@ -75,6 +75,13 @@ public class HandlebarsTest {
 		new Handlebars(scriptSrc);
 	}
 	
+	
+	@Test
+	public void testRenderingWithString() {
+		JSTemplate template = handlebars.compile("Hello {{this}}");
+		assertEquals("Hello Handlebars" , handlebars.renderWithData(template, "Handlebars"));
+	}
+	
 	@Test
 	public void testRenderingWithSimpleObject() {
 		to.setUsername("handlebars");

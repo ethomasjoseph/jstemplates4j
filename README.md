@@ -16,21 +16,32 @@ The following JavaScript templates being considered to be supported in the near 
 
 ## Features
 * Lightweight - each library is just few KBs.
-* Least or no dependencies - every sub-project is mostly self-contained and requires no additional dependencies.
+* Least dependencies - except for dependency on SLF4J api, every sub-project is mostly self-contained and requires no additional dependencies.
 * Fast - runs on the Nashorn script engine which is fast.
 * OSGi Ready - all the sub-projects are valid OSGi bundles.
 
 ## Getting Started
-This component uses a Maven 2 (http://maven.apache.org/) build environment. It requires a Java 8 JDK (or higher) and Maven (http://maven.apache.org/) 3.0.0 or later. We recommend to use the latest Maven version.
+Building this project requires Java 8 JDK (or higher) and Maven (http://maven.apache.org/) 3.0.0 or later. We recommend to use the latest Maven version.
 
-This project is not available as a binary in any repository, so you would have to build it. To build the project, it is required to first build the parent project independently, since the parent POM is not released to any public repository.
+### Building
+This project is not available as a binary in any repository, so you would have to build it. To build the project, it is required to first build the `parent` project independently, since the `parent` POM is not released to any public repository.
 
-Thereafter, the builder project (current directory) can be build which is a reactor project to build all the sub-projects in this umbrella project.
+	mvn install
 
+Thereafter, the `builder` project (top level directory) can be built which is a reactor project to build all the sub-projects in this umbrella project.
 
+	mvn clean install
+
+### Using
+This project requires JRE 8 (or higher) to run. All the compilers follow similar API for basic functioning.
+
+```java
+	JSTemplateCompiler compiler = new Handlebars(); // or new Dust();
+	JSTemplate template = compiler.compile("Hello {{username}}"); // follow the templating language syntax
+	System.out.println(template.renderWithData("Data Object for JSTemplate"));
 ```
-mvn clean install
-```
+
+Follow the README and documentation for the respective sub-projects for specific usage.
 
 ## Contributing
 This project is in very early stages and may not be fully compatible to its JavaScript counterpart, although a genuine effort has been made to enable the major functionalities available for the given templating framework.
