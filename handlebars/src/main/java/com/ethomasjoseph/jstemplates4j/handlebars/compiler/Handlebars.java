@@ -1,10 +1,23 @@
+/*
+ * Copyright 2015 Thomas Joseph
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *     
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.ethomasjoseph.jstemplates4j.handlebars.compiler;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
@@ -34,8 +47,6 @@ public class Handlebars extends AbstractJSTemplateCompiler {
 	
 	private static final String JSON = "JSON";
 
-	private static final String NASHORN = "nashorn";
-
 	private static final String METHOD_COMPILE = "compile";
 	
 	private static final String METHOD_REGISTER_HELPER = "registerHelper";
@@ -43,17 +54,15 @@ public class Handlebars extends AbstractJSTemplateCompiler {
 	private static final String METHOD_UNREGISTER_HELPER = "unregisterHelper";
 	
 	/** The Handlebars object */
-	private ScriptObjectMirror handlebars = null;
+	private ScriptObjectMirror handlebars;
 	
 	/** The Handlebars Wrapper object */
-	private ScriptObjectMirror hbwrapper = null;
+	private ScriptObjectMirror hbwrapper;
 	
 	/** The default JSON parser - the JavaScript JSON object. */
-	private ScriptObjectMirror json = null;
+	private ScriptObjectMirror json;
 	
-	private ScriptEngine engine;
-	
-	private TemplateCache templateCache = null;
+	private TemplateCache templateCache;
 	
 	/**
 	 * Creates a Handlebars compiler with a built-in Handlebars version.
@@ -63,7 +72,7 @@ public class Handlebars extends AbstractJSTemplateCompiler {
 	 *             the script.
 	 */
 	public Handlebars() throws ScriptException {
-		this(new InputStreamReader(Handlebars.class.getClassLoader().getResourceAsStream(HANDLEBARS_MIN_JS)));
+		super(new InputStreamReader(Handlebars.class.getClassLoader().getResourceAsStream(HANDLEBARS_MIN_JS)));
 	}
 	
 	/**
@@ -77,27 +86,17 @@ public class Handlebars extends AbstractJSTemplateCompiler {
 	 *             the script.
 	 */
 	public Handlebars(final Reader scriptSrc) throws ScriptException {
-		init(scriptSrc);
+		super(scriptSrc);
 	}
 	
 	/**
 	 * Initializes the Handlebars compiler.
 	 * 
-	 * @param scriptSrc
-	 *            represents the Handlebars JavaScript library source.
 	 * @throws ScriptException
 	 *             when some error occurs in reading the script or initializing
 	 *             the script.
 	 */
-	void init(final Reader scriptSrc) throws ScriptException {
-		ScriptEngineManager engineManager = new ScriptEngineManager();
-	    engine = engineManager.getEngineByName(NASHORN);
-	    
-	    //engine.eval("load(\"nashorn:mozilla_compat.js\");");
-
-    	// evaluate handlebars script
-		engine.eval(scriptSrc);
-		
+	protected void init() throws ScriptException {
 		// evaluate the handlebars wrapper script
 		InputStreamReader wrapperScriptSrc = new InputStreamReader(Handlebars.class.getClassLoader().getResourceAsStream(HANDLEBARS_WRAPPER_JS));
 		engine.eval(wrapperScriptSrc);

@@ -18,8 +18,6 @@ package com.ethomasjoseph.jstemplates4j.dustjs.compiler;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
@@ -44,8 +42,6 @@ import com.ethomasjoseph.jstemplates4j.dustjs.compiler.internal.RenderedOutput;
 public class Dust extends AbstractJSTemplateCompiler {
 	private static final Logger LOG = LoggerFactory.getLogger(Dust.class);
 
-	private static final String NASHORN = "nashorn";
-
 	private static final String DUST_MIN_JS = "dust-full.min-v2.7.1.js";
 	
 	private static final String DUST_WRAPPER_JS = "dust-nashorn-extension.js";
@@ -68,15 +64,13 @@ public class Dust extends AbstractJSTemplateCompiler {
 
 	private static final String METHOD_UNREGISTER_HELPER = "unregisterHelper";
 	
-	private ScriptEngine engine;
-	
 	/** The dust object */
-	private ScriptObjectMirror dust = null;
+	private ScriptObjectMirror dust;
 	
-	private ScriptObjectMirror dustWrapper = null;
+	private ScriptObjectMirror dustWrapper;
 	
 	/** The default JSON parser - the JavaScript JSON object. */
-	private ScriptObjectMirror json = null;
+	private ScriptObjectMirror json;
 
 
 	
@@ -88,7 +82,7 @@ public class Dust extends AbstractJSTemplateCompiler {
 	 *             the script.
 	 */
 	public Dust() throws ScriptException {
-		this(new InputStreamReader(Dust.class.getClassLoader().getResourceAsStream(DUST_MIN_JS)));
+		super(new InputStreamReader(Dust.class.getClassLoader().getResourceAsStream(DUST_MIN_JS)));
 	}
 	
 	/**
@@ -102,25 +96,17 @@ public class Dust extends AbstractJSTemplateCompiler {
 	 *             the script.
 	 */
 	public Dust(final Reader scriptSrc) throws ScriptException {
-		init(scriptSrc);
+		super(scriptSrc);
 	}
 	
 	/**
 	 * Initializes the Dust compiler.
 	 * 
-	 * @param scriptSrc
-	 *            represents the Dust JavaScript library source.
 	 * @throws ScriptException
 	 *             when some error occurs in reading the script or initializing
 	 *             the script.
 	 */
-	void init(final Reader scriptSrc) throws ScriptException {
-		ScriptEngineManager engineManager = new ScriptEngineManager();
-	    engine = engineManager.getEngineByName(NASHORN);
-
-    	// evaluate dust script
-		engine.eval(scriptSrc);
-		
+	protected void init() throws ScriptException {
 		// evaluate dust-helpers script
 		InputStreamReader helperScript = new InputStreamReader(Dust.class.getClassLoader().getResourceAsStream(DUST_HELPER_JS));
 		engine.eval(helperScript);
@@ -130,8 +116,8 @@ public class Dust extends AbstractJSTemplateCompiler {
 		engine.eval(wrapperScriptSrc);
 
 		// now extracting dust variable from the script engine
-		dust = ScriptObjectMirror.class.cast(engine.eval(DUST));
-		dustWrapper = ScriptObjectMirror.class.cast(engine.eval(DUST_WRAPPER));
+		this.dust = ScriptObjectMirror.class.cast(engine.eval(DUST));
+		this.dustWrapper = ScriptObjectMirror.class.cast(engine.eval(DUST_WRAPPER));
 
 		json = ScriptObjectMirror.class.cast(engine.eval(JSON));
 		
@@ -143,6 +129,7 @@ public class Dust extends AbstractJSTemplateCompiler {
 	}
 
 	// Compile Functions
+	@Override
 	public JSTemplate compile(final String templateSrc) {
 		return compile(templateSrc, CompilerUtils.hash(templateSrc));
 	}
@@ -157,9 +144,9 @@ public class Dust extends AbstractJSTemplateCompiler {
 		}
 		JSTemplate jSTemplate = templateCache.get(name);
 		if (jSTemplate == null) {
-			Object nativeTemplate = dust.callMember(METHOD_COMPILE, templateSrc, name);
+			Object nativeTemplate = this.dust.callMember(METHOD_COMPILE, templateSrc, name);
 			jSTemplate = new JSTemplate(nativeTemplate, name);
-			dust.callMember(METHOD_LOAD_SOURCE, nativeTemplate);
+			this.dust.callMember(METHOD_LOAD_SOURCE, nativeTemplate);
 			templateCache.put(name, jSTemplate);
 		}
 		return jSTemplate;
@@ -175,19 +162,19 @@ public class Dust extends AbstractJSTemplateCompiler {
 		return renderedOutput.getOutput();
 	}
 
-	public <T> Dust registerHelper(final String namespace, final Reader source, final String... helperName) throws HelperException {
+	public <T> Dust registerJSHelper(final Reader source, final String namespace, final String... helperName) throws HelperException {
 		try {
-			engine.eval(source);
+			registerJavaScript(source);
 			ScriptObjectMirror helpers = ScriptObjectMirror.class.cast(engine.eval(namespace));
-			dustWrapper.callMember(METHOD_REGISTER_HELPER, helpers, (Object[])helperName);
+			this.dustWrapper.callMember(METHOD_REGISTER_HELPER, helpers, (Object[])helperName);
 			return this;
 		} catch (ScriptException e) {
 			throw new HelperException(e);
 		}
 	}
-
+	
 	public <T> Dust unregisterHelper(final String helperName) {
-		dustWrapper.callMember(METHOD_UNREGISTER_HELPER, helperName);
+		this.dustWrapper.callMember(METHOD_UNREGISTER_HELPER, helperName);
 		return this;
 	}
 }

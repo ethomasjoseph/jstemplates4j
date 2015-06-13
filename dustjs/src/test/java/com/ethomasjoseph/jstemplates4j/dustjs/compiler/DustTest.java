@@ -226,14 +226,14 @@ public class DustTest {
 	}
 
 	@Test
-	public void testRegisterCustomHelper() throws HelperException {
+	public void testRegisterCustomHelper() throws HelperException, ScriptException {
 		String json = "{\"houses\":{\"gryffindor\":{\"founder\":\"Godric Gryffindor\"},\"hufflepuff\":{\"founder\":\"Helga Hufflepuff\"}}}";
 		InputStreamReader helperScript = new InputStreamReader(Dust.class.getClassLoader().getResourceAsStream("dust-helper-test.js"));
-		dust.registerHelper("dusthelper", helperScript, "testhelper");
+		dust.registerJavaScript(helperScript);
 		JSTemplate jsTemplate = dust.compile("There is {@testhelper key=\"yes\"/} "
 				+ "{@testhelper some=\"valll\"} is a great {@eq value=\"0\" type=\"number\"} class=\"alt-row\"{/eq} thought {/testhelper}"
-				+ "{@testhelper}first case{:else}second case{/testhelper} left to do.");
-		System.out.println(dust.renderWithJSON(jsTemplate, json));
+				+ "{@testhelper2}first case{:else}second case{/testhelper2} left to do.");
+		assertEquals("There is  |this is helper1|   |this is helper1|  |THIS IS HELPER2|  left to do.", dust.renderWithJSON(jsTemplate, json));
 	}
 	
 	private class IgnoreStringWhiteSpaceMatcher extends BaseMatcher<CharSequence> {

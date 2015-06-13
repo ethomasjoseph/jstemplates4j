@@ -15,6 +15,12 @@
  */
 package com.ethomasjoseph.jstemplates4j.base;
 
+import java.io.Reader;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 /**
  * Abstracts common functionalities required for a JSTemplateCompiler.
  * 
@@ -22,19 +28,36 @@ package com.ethomasjoseph.jstemplates4j.base;
  *
  */
 public abstract class AbstractJSTemplateCompiler implements JSTemplateCompiler {
+	private static final String NASHORN = "nashorn";
 
 	protected JSONParser jsonParser;
-	
+
 	protected TemplateCache templateCache;
+
+	protected ScriptEngine engine;
+
+	public AbstractJSTemplateCompiler(final Reader scriptSrc)
+			throws ScriptException {
+		preInit(scriptSrc);
+		init();
+	}
+
+	protected void preInit(final Reader scriptSrc) throws ScriptException {
+		ScriptEngineManager engineManager = new ScriptEngineManager();
+		engine = engineManager.getEngineByName(NASHORN);
+		registerJavaScript(scriptSrc);
+	}
+
+	protected abstract void init() throws ScriptException;
+
+	@Override
+	public void registerJavaScript(final Reader reader) throws ScriptException {
+		engine.eval(reader);
+	}
 
 	@Override
 	public CharSequence renderWithJSON(JSTemplate jSTemplate, String json) {
 		return renderWithData(jSTemplate, jsonParser.parse(json));
-	}
-
-	@Override
-	public JSONParser getJsonParser() {
-		return jsonParser;
 	}
 
 	@Override

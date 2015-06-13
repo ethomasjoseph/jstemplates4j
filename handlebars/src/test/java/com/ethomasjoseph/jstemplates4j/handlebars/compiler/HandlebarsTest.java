@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.ethomasjoseph.jstemplates4j.base.JSTemplate;
-import com.ethomasjoseph.jstemplates4j.handlebars.compiler.Handlebars;
 import com.ethomasjoseph.jstemplates4j.handlebars.compiler.testvo.TestObject;
 
 /**
@@ -184,6 +183,5 @@ public class HandlebarsTest {
 		to.setBool(false);
 		assertEquals("Hello bool ", handlebars.renderWithData(template, to));
 	}
-	
 
 }
