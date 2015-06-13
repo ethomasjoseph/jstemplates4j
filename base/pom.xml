@@ -22,6 +22,7 @@
 		<groupId>com.ethomasjoseph.jstemplates4j</groupId>
 		<artifactId>jstemplates4j</artifactId>
 		<version>1.0.0</version>
+		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
 	<artifactId>base</artifactId>
