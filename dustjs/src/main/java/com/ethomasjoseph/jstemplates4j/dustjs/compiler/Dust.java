@@ -29,8 +29,9 @@ import com.ethomasjoseph.jstemplates4j.base.AbstractJSTemplateCompiler;
 import com.ethomasjoseph.jstemplates4j.base.CompilerUtils;
 import com.ethomasjoseph.jstemplates4j.base.JSTemplate;
 import com.ethomasjoseph.jstemplates4j.base.cache.MapBasedTemplateCache;
+import com.ethomasjoseph.jstemplates4j.dustjs.compiler.helper.DustHelper;
 import com.ethomasjoseph.jstemplates4j.dustjs.compiler.helper.HelperException;
-import com.ethomasjoseph.jstemplates4j.dustjs.compiler.internal.RenderedOutput;
+import com.ethomasjoseph.jstemplates4j.dustjs.compiler.helper.internal.RenderedOutput;
 
 /**
  * Dust templating engine's compiler that runs on Nashorn script engine.
@@ -59,8 +60,10 @@ public class Dust extends AbstractJSTemplateCompiler {
 	private static final String METHOD_LOAD_SOURCE = "loadSource";
 
 	private static final String METHOD_RENDER = "render";
-
+	
 	private static final String METHOD_REGISTER_HELPER = "registerHelper";
+
+	private static final String METHOD_JS_REGISTER_HELPER = "registerJSHelper";
 
 	private static final String METHOD_UNREGISTER_HELPER = "unregisterHelper";
 	
@@ -162,18 +165,23 @@ public class Dust extends AbstractJSTemplateCompiler {
 		return renderedOutput.getOutput();
 	}
 
-	public <T> Dust registerJSHelper(final Reader source, final String namespace, final String... helperName) throws HelperException {
+	public Dust registerJSHelper(final Reader source, final String namespace, final String... helperName) throws HelperException {
 		try {
 			registerJavaScript(source);
 			ScriptObjectMirror helpers = ScriptObjectMirror.class.cast(engine.eval(namespace));
-			this.dustWrapper.callMember(METHOD_REGISTER_HELPER, helpers, (Object[])helperName);
+			this.dustWrapper.callMember(METHOD_JS_REGISTER_HELPER, helpers, (Object[])helperName);
 			return this;
 		} catch (ScriptException e) {
 			throw new HelperException(e);
 		}
 	}
 	
-	public <T> Dust unregisterHelper(final String helperName) {
+	public Dust registerHelper(final String name, final DustHelper helper) {
+		this.dustWrapper.callMember(METHOD_REGISTER_HELPER, name, helper);
+		return this;
+	}
+	
+	public Dust unregisterHelper(final String helperName) {
 		this.dustWrapper.callMember(METHOD_UNREGISTER_HELPER, helperName);
 		return this;
 	}

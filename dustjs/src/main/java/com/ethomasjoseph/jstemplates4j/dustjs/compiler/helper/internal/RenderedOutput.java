@@ -1,4 +1,4 @@
-package com.ethomasjoseph.jstemplates4j.dustjs.compiler.internal;
+package com.ethomasjoseph.jstemplates4j.dustjs.compiler.helper.internal;
 
 public class RenderedOutput {
 	private String error;

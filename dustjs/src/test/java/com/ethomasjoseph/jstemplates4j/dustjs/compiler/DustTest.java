@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.ethomasjoseph.jstemplates4j.base.JSTemplate;
+import com.ethomasjoseph.jstemplates4j.dustjs.compiler.helper.DustHelper;
 import com.ethomasjoseph.jstemplates4j.dustjs.compiler.helper.HelperException;
 
 /**
@@ -226,7 +227,7 @@ public class DustTest {
 	}
 
 	@Test
-	public void testRegisterCustomHelper() throws HelperException, ScriptException {
+	public void testRegisterJSCustomHelper() throws HelperException, ScriptException {
 		String json = "{\"houses\":{\"gryffindor\":{\"founder\":\"Godric Gryffindor\"},\"hufflepuff\":{\"founder\":\"Helga Hufflepuff\"}}}";
 		InputStreamReader helperScript = new InputStreamReader(Dust.class.getClassLoader().getResourceAsStream("dust-helper-test.js"));
 		dust.registerJavaScript(helperScript);
@@ -234,6 +235,18 @@ public class DustTest {
 				+ "{@testhelper some=\"valll\"} is a great {@eq value=\"0\" type=\"number\"} class=\"alt-row\"{/eq} thought {/testhelper}"
 				+ "{@testhelper2}first case{:else}second case{/testhelper2} left to do.");
 		assertEquals("There is  |this is helper1|   |this is helper1|  |THIS IS HELPER2|  left to do.", dust.renderWithJSON(jsTemplate, json));
+	}
+	
+	@Test
+	public void testRegisterJavaCustomHelper() throws HelperException, ScriptException {
+		String json = "{\"houses\":{\"gryffindor\":{\"founder\":\"Godric Gryffindor\"},\"hufflepuff\":{\"founder\":\"Helga Hufflepuff\"}}}";
+		DustHelper dustHelper = (chunk, context, bodies, params) -> {
+			return chunk.write("has " + params.get("key"));
+		};
+		dust.registerHelper("dustjava", dustHelper);
+		
+		JSTemplate jsTemplate = dust.compile("The basic Java based Dust JS {@dustjava key=\"started\"/} working!");
+		assertEquals("The basic Java based Dust JS has started working!", dust.renderWithJSON(jsTemplate, json));
 	}
 	
 	private class IgnoreStringWhiteSpaceMatcher extends BaseMatcher<CharSequence> {
